@@ -50,3 +50,12 @@ The first complete local acceptance run exposed trailing whitespace emitted by M
 ## Next maintenance questions
 
 I would investigate whether a measured dispatch rule can choose SDPA for small/nonsharing inputs, whether a compiled merge loop reduces Python overhead, and how real model KV distributions affect the crossover. These are future questions, not implemented branches or promised results. A model integration would need its own model license, positional-encoding verification and generation-quality tests.
+
+
+## 2026-10-13 — commit identity prevention
+
+The privacy audit identified a known author/committer history finding. It remains unresolved in the published history. This maintenance change adds `make precommit-identity` to inspect Git's effective author and committer, including environment overrides, before a new commit. The command reports rule names without disclosing identity values. Passing it only checks the next commit's currently resolved identity; it does not clear historical findings or replace the full `python scripts/audit.py` audit after committing and before pushing. Commit-command overrides still require reviewing the resulting commit.
+
+The Python CI checkout now fetches complete history so a later ordinary commit cannot hide a known ancestor finding through a shallow checkout. The historical audit remains unchanged and is expected to fail while that finding remains. Published history has not been rewritten, and removed personal documents remain in old commits; their removal from the current tree is not historical erasure. This is a privacy-prevention change, with no new scientific or performance claim.
+
+Local targeted validation: `python -m pytest -q tests/test_commit_identity.py tests/test_tooling.py` passed 21 tests, including real temporary Git repositories with safe configuration, unsafe configuration, environment overrides and retained history findings. Ruff checks and documentation checks passed. The current identity preflight passes; the full historical audit still reports the known author and committer finding and exits 1. Remote CI for this prevention patch has not been run at this checkpoint.

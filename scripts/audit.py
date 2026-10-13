@@ -55,6 +55,55 @@ def private_email(value: str) -> bool:
     return not value.lower().endswith("@users.noreply.github.com")
 
 
+def precommit_identity(root: Path) -> dict:
+    """Check Git's effective next-commit identities without printing their values.
+
+    检查 Git 实际生效的下次提交身份，包含环境覆盖；不输出姓名、邮箱或 Git 错误原文。
+    This future-commit preflight does not clear or replace the historical audit.
+    此提交前检查不清除也不替代历史审查。
+    """
+    root = root.resolve()
+    findings = []
+    checked = 0
+    try:
+        repository = subprocess.run(
+            ["git", "rev-parse", "--show-toplevel"],
+            cwd=root,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if repository.returncode or Path(repository.stdout.strip()).resolve() != root:
+            findings.append({"path": "git:next-commit", "rule": "not-repository-root"})
+        else:
+            for role in ("author", "committer"):
+                identity = subprocess.run(
+                    ["git", "var", f"GIT_{role.upper()}_IDENT"],
+                    cwd=root,
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                )
+                match = re.fullmatch(r".+ <([^<>]+)> [0-9]+ [+-][0-9]{4}", identity.stdout.strip())
+                if identity.returncode or match is None or EMAIL.fullmatch(match[1]) is None:
+                    findings.append(
+                        {"path": "git:next-commit", "rule": f"unavailable-{role}-identity"}
+                    )
+                elif private_email(match[1]):
+                    findings.append({"path": "git:next-commit", "rule": f"private-{role}-email"})
+                checked += 1
+    except OSError:
+        findings.append({"path": "git:next-commit", "rule": "identity-check-unavailable"})
+    return {
+        "status": "passed" if not findings else "failed",
+        "message": "Effective commit identity preflight / 实际提交身份预检",
+        "identities_checked": checked,
+        "findings": findings,
+        "scope": "next commit only; historical audit remains required / 仅下次提交；仍须历史审查",
+        "git_history_status": "not_checked_by_precommit_mode",
+    }
+
+
 def text_rules(text: str, *, core: bool = False) -> set[str]:
     """Return rule identifiers, never matched content / 仅返回规则标识，不返回匹配内容。"""
     findings = {name for name, pattern in RULES if pattern.search(text)}
@@ -218,8 +267,13 @@ def audit(root: Path) -> dict:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=ROOT, help="repository root / 仓库目录")
+    parser.add_argument(
+        "--precommit-identity",
+        action="store_true",
+        help="Check effective next-commit identities only / 仅检查实际下次提交身份",
+    )
     args = parser.parse_args()
-    result = audit(args.root)
+    result = precommit_identity(args.root) if args.precommit_identity else audit(args.root)
     print(json.dumps(result, ensure_ascii=False, indent=2))
     return 0 if result["status"] == "passed" else 1
 

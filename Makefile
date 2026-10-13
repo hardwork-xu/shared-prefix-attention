@@ -1,7 +1,7 @@
 UV ?= .venv/bin/uv
 PY ?= .venv/bin/python
 
-.PHONY: install demo test check benchmark analyze build validate
+.PHONY: install demo test check benchmark analyze build validate precommit-identity
 install:
 	$(UV) sync --frozen --group bench
 
@@ -29,3 +29,6 @@ build:
 
 validate:
 	$(PY) scripts/validate.py
+
+precommit-identity:
+	$(PY) scripts/audit.py --precommit-identity

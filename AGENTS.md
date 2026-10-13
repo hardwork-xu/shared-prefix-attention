@@ -14,3 +14,6 @@
   未获明确授权不得推送、公开发布、创建付费资源或部署；本地提交仅暂存相关文件。
 - A change is complete when behavior, tests, bilingual docs, source-linked acceptance and relevant benchmarks agree.
   完成条件：实现、测试、双语文档、验收证据与必要实验一致。
+
+- Before each new commit, run `make precommit-identity`; it resolves both author and committer using Git, including environment overrides. Use the already verified repository-local GitHub privacy identity, and never print identity values in check output. / 每次新提交前运行该命令，检查包括环境覆盖在内的实际作者与提交者；沿用已核实的仓库局部隐私身份，检查不回显身份值。
+- After committing and before pushing, run the full `scripts/audit.py` and review the new commits. The identity preflight is only prevention; it does not replace historical audit. A known history privacy finding remains unresolved until separately addressed within authorized constraints. Do not hide it by shallow checkout, exemptions or rewriting published history. / 提交后、推送前执行完整审查并核对新增提交；身份预检仅用于防复发，不能替代历史审查。已知历史隐私发现仍未解决，不得用浅克隆、豁免或改写已发布历史隐藏。
