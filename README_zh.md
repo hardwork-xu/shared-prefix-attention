@@ -154,7 +154,6 @@ with DecodeBatch(prefix, batch_size=4, capacity=8) as batch:
 | [实验](docs/zh/EXPERIMENTS.md) | 完整证据、基线、消融及不利场景 |
 | [开发记录](docs/zh/DEVELOPMENT.md) | 实际修改、修复、验证与提交引用 |
 | [发布](docs/zh/RELEASE.md) | 安装、说明草稿、公开元数据与状态 |
-| [简历与项目讲解](docs/zh/RESUME.md) | 有证据支持的项目描述与讲解 |
 
 我欢迎范围清楚、附带回归证据的贡献。请参阅[贡献指南](CONTRIBUTING_zh.md)、[安全与限制](SECURITY_zh.md)和[维护约定](AGENTS.md)。
 

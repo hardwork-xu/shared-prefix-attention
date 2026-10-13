@@ -154,7 +154,6 @@ The tests cover numerical boundaries, ragged masking, atomic append, concurrent 
 | [Experiments](docs/en/EXPERIMENTS.md) | Complete evidence, baseline, ablations and unfavorable cases |
 | [Development](docs/en/DEVELOPMENT.md) | Actual changes, fixes, tests and commit references |
 | [Release](docs/en/RELEASE.md) | Installation, draft notes, public metadata and release status |
-| [Resume and project talk](docs/en/RESUME.md) | Evidence-backed project descriptions and explanation |
 
 I welcome narrowly scoped changes with regression evidence. See [contribution guidance](CONTRIBUTING.md), [security and limits](SECURITY.md) and [maintenance rules](AGENTS.md).
 

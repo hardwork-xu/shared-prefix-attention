@@ -24,7 +24,6 @@ REQUIRED_DOCS = {
     "DEVELOPMENT.md",
     "WALKTHROUGH.md",
     "RELEASE.md",
-    "RESUME.md",
 }
 BEGIN, END = "<!-- BENCHMARK:START -->", "<!-- BENCHMARK:END -->"
 INLINE_LINK = re.compile(r"!?\[[^\]\n]*\]\(\s*(<[^>\n]+>|[^\s)]+)(?:\s+['\"][^\n]*?['\"])?\s*\)")
@@ -125,7 +124,11 @@ def target_issues(targets: dict, config: dict) -> list[dict[str, str]]:
 def check(root: Path) -> dict:
     """Check structure, links, tables and citations / 检查双语结构、链接、表格与引用。"""
     root = root.resolve()
-    issues = []
+    issues = [
+        issue(str(path.relative_to(root)), "personal-document-in-public-tree")
+        for path in sorted((root / "docs").rglob("*"))
+        if path.is_file() and path.name.upper() in {"RESUME.MD", "PROJECT_TALK.MD"}
+    ]
     markdown = [
         path
         for path in root.rglob("*.md")
